@@ -1,50 +1,39 @@
+let listContainer = document.querySelector('.Lista');
+
 function updateList() {
-    fetch('https://crudcrud.com/api/adc54d7744e946cd8ffc1851accabb6d/grupo255', {
-      mode: 'no-cors'
-    })
-      .then(response => {
-        return response.text();
-      })
-      .then(data => {
-        let listContainer = document.querySelector('.Lista');
-  
+  fetch('https://crudcrud.com/api/adc54d7744e946cd8ffc1851accabb6d/grupo255')
+    .then(response => response.json())
+    .then(data => {
+      
         listContainer.innerHTML = '';
-  
-        let jsonData = JSON.parse(data);
-  
-        jsonData.forEach(item => {
-          let listItem = document.createElement('div');
-          listItem.textContent = `Nombre: ${item.nombre}, Apellido: ${item.apellido}, Grupo: ${item.grupo}, Sala: ${item.sala}`;
-          let deleteIcon = document.createElement('img');
-          deleteIcon.src = 'checkbox-152188_640.png';
-          deleteIcon.alt = 'Delete';
-          deleteIcon.width = 130;
-          deleteIcon.height = 105;
-  
-          // pointer img //
-          deleteIcon.addEventListener('mouseover', () => {
-            deleteIcon.style.cursor = 'pointer';
-          });
-  
-          deleteIcon.addEventListener('mouseout', () => {
-            deleteIcon.style.cursor = 'auto';
-          });
-  
-          deleteIcon.addEventListener('click', () => {
-            fetch(`https://crudcrud.com/api/adc54d7744e946cd8ffc1851accabb6d/grupo255${item._id}`, {
-              method: 'DELETE'
+
+      data.forEach(item => {
+        let listItem = document.createElement('div');
+        listItem.textContent = `Nombre: ${item.nombre}, Apellido: ${item.apellido}, Grupo: ${item.grupo}, Sala: ${item.room}`;
+        
+        let deleteIcon = document.createElement('img');
+        deleteIcon.src = 'checkbox-152188_640.png';
+        deleteIcon.alt = 'Delete';
+        deleteIcon.width = 99;
+        deleteIcon.height = 99;
+        
+        deleteIcon.addEventListener('click', () => {
+          fetch(`https://crudcrud.com/api/adc54d7744e946cd8ffc1851accabb6d/grupo255/${item._id}`, {
+            method: 'DELETE'
+          })
+            .then(() => {
+              listItem.remove();
             })
-              .then(() => {
-                listItem.remove();
-              })
-              .catch(error => console.error('Error deleting item:', error));
-          });
-          listItem.appendChild(deleteIcon);
-          listContainer.appendChild(listItem);
+            .catch(error => console.error('Error al eliminar el elemento:', error));
         });
-      })
-      .catch(error => console.error('Error fetching data:', error));
-  }
-  
-  setInterval(updateList, 1500);
-  updateList();
+
+        listItem.appendChild(deleteIcon);
+        listContainer.appendChild(listItem);
+      });
+    })
+
+    .catch(error => console.error('Error al obtener datos:', error));
+};
+
+setInterval(updateList, 1500);
+updateList();
